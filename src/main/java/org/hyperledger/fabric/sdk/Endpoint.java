@@ -386,15 +386,18 @@ class Endpoint {
                     classParms[i] = clz;
                 }
             }
-
-            final Method method = channelBuilder.getClass().getMethod(methodName, classParms);
-
-            method.invoke(channelBuilder, parmsArray);
-
-            if (logger.isTraceEnabled()) {
-                logger.trace(format("Endpoint with url: %s set managed channel builder method %s (%s) ", url,
-                        method, Arrays.toString(parmsArray)));
-
+            
+            if ("maxInboundMessageSize".contains(methodName)) {
+                this.channelBuilder.maxInboundMessageSize(Integer.parseInt(props.getProperty("grpc.NettyChannelBuilderOption.maxInboundMessageSize")));
+            } else {
+              final Method method = channelBuilder.getClass().getMethod(methodName, classParms);
+              method.invoke(channelBuilder, parmsArray);
+              if (logger.isTraceEnabled()) {
+                logger.trace(
+                    format(
+                        "Endpoint with url: %s set managed channel builder method %s (%s) ",
+                        url, method, Arrays.toString(parmsArray)));
+              }
             }
 
         }
